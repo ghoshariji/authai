@@ -1,0 +1,58 @@
+export const colors = {
+  primary: '#6C63FF',
+  primaryDark: '#5A52D5',
+  primaryLight: '#9C8FFF',
+  secondary: '#FF6584',
+  secondaryLight: '#FF8FAD',
+  success: '#4CAF50',
+  successLight: '#81C784',
+  warning: '#FF9800',
+  warningLight: '#FFB74D',
+  error: '#F44336',
+  errorLight: '#E57373',
+  info: '#2196F3',
+  infoLight: '#64B5F6',
+  background: {
+    light: '#F8F9FD',
+    dark: '#1A1A2E',
+  },
+  surface: {
+    light: '#FFFFFF',
+    dark: '#16213E',
+  },
+  card: {
+    light: '#FFFFFF',
+    dark: '#0F3460',
+  },
+  text: {
+    primary: { light: '#1A1A2E', dark: '#FFFFFF' },
+    secondary: { light: '#666680', dark: '#A0A0B0' },
+    disabled: { light: '#BBBBD0', dark: '#555570' },
+  },
+  border: { light: '#E8E8F0', dark: '#2D2D4E' },
+  gradients: {
+    primary: ['#6C63FF', '#9C63FF'],
+    secondary: ['#FF6584', '#FF8FAD'],
+    success: ['#4CAF50', '#81C784'],
+    info: ['#2196F3', '#64B5F6'],
+    warning: ['#FF9800', '#FFB74D'],
+  },
+  plan: {
+    FREE: '#9E9E9E',
+    BASIC: '#2196F3',
+    PRO: '#6C63FF',
+    ENTERPRISE: '#FF9800',
+  },
+  grade: {
+    A: '#4CAF50',
+    B: '#8BC34A',
+    C: '#FFC107',
+    D: '#FF9800',
+    F: '#F44336',
+  },
+  attendance: {
+    PRESENT: '#4CAF50',
+    ABSENT: '#F44336',
+    LATE: '#FF9800',
+  },
+};
