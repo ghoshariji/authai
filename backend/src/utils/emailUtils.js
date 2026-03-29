@@ -85,6 +85,42 @@ const emailTemplates = {
     text: `Hello ${name}, your password has been changed. If you did not do this, contact support immediately.`,
   }),
 
+  studentWelcome: (studentName, collegeName, email, password) => ({
+    subject: `Welcome to ${collegeName} — Your Login Credentials`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border:1px solid #E5E7EB; border-radius:12px; overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#6C63FF,#9C63FF);padding:32px;text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:28px;">🎓 Welcome!</h1>
+          <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">${collegeName}</p>
+        </div>
+        <div style="padding:32px;">
+          <h2 style="color:#1A1A2E;margin-top:0;">Hello, ${studentName}!</h2>
+          <p style="color:#6B7280;">Your student account has been created. Use the credentials below to log in to the College Management App.</p>
+          <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:24px;margin:24px 0;">
+            <table style="width:100%;border-collapse:collapse;">
+              <tr>
+                <td style="padding:8px 0;color:#6B7280;font-weight:600;width:120px;">Email</td>
+                <td style="padding:8px 0;color:#1A1A2E;font-weight:700;">${email}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;color:#6B7280;font-weight:600;">Password</td>
+                <td style="padding:8px 0;font-size:20px;font-weight:700;color:#6C63FF;letter-spacing:2px;">${password}</td>
+              </tr>
+            </table>
+          </div>
+          <div style="background:#FFF9C4;border-left:4px solid #F59E0B;padding:16px;border-radius:4px;margin-bottom:24px;">
+            <p style="margin:0;color:#92400E;font-size:14px;">⚠️ For security, please change your password after your first login.</p>
+          </div>
+          <p style="color:#6B7280;font-size:14px;margin:0;">If you did not expect this email, please contact your college admin.</p>
+        </div>
+        <div style="background:#F3F4F6;padding:16px;text-align:center;">
+          <p style="margin:0;color:#9CA3AF;font-size:12px;">© ${new Date().getFullYear()} College Management System</p>
+        </div>
+      </div>
+    `,
+    text: `Welcome ${studentName}! Your account for ${collegeName} has been created. Email: ${email} | Password: ${password}. Please change your password after first login.`,
+  }),
+
   subscriptionConfirmed: (collegeName, plan, expiryDate) => ({
     subject: `Subscription Confirmed - ${plan} Plan`,
     html: `

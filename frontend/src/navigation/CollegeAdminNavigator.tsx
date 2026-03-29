@@ -12,7 +12,10 @@ import AddStudentScreen from '../screens/collegeAdmin/AddStudentScreen';
 import TeachersScreen from '../screens/collegeAdmin/TeachersScreen';
 import AddTeacherScreen from '../screens/collegeAdmin/AddTeacherScreen';
 import NoticesScreen from '../screens/collegeAdmin/NoticesScreen';
+import CreateNoticeScreen from '../screens/collegeAdmin/CreateNoticeScreen';
 import SubscriptionScreen from '../screens/collegeAdmin/SubscriptionScreen';
+import FeatureConfigScreen from '../screens/collegeAdmin/FeatureConfigScreen';
+import ImportStudentsScreen from '../screens/collegeAdmin/ImportStudentsScreen';
 import ProfileScreen from '../screens/common/ProfileScreen';
 
 const Tab = createBottomTabNavigator<CollegeAdminTabParamList>();
@@ -62,8 +65,11 @@ const CollegeAdminNavigator: React.FC = () => {
       <Stack.Screen name="Tabs" component={CollegeAdminTabs} />
       <Stack.Screen name="AddStudent" component={AddStudentScreen} />
       <Stack.Screen name="AddTeacher" component={AddTeacherScreen} />
+      <Stack.Screen name="ImportStudents" component={ImportStudentsScreen} />
       <Stack.Screen name="Notices" component={NoticesScreen} />
+      <Stack.Screen name="CreateNotice" component={CreateNoticeScreen} />
       <Stack.Screen name="Subscription" component={SubscriptionScreen} />
+      <Stack.Screen name="FeatureConfig" component={FeatureConfigScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );

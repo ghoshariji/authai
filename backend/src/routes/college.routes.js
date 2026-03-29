@@ -4,6 +4,7 @@ const collegeController = require('../controllers/college.controller');
 const { authenticate } = require('../middleware/auth');
 const { authorize } = require('../middleware/rbac');
 const { tenantIsolation } = require('../middleware/tenantIsolation');
+const { requireActiveSubscription } = require('../middleware/subscriptionGuard');
 
 router.use(authenticate);
 
@@ -33,5 +34,21 @@ router.put('/:id', authorize('SUPER_ADMIN', 'COLLEGE_ADMIN'), collegeController.
 
 // DELETE /api/colleges/:id — SUPER_ADMIN only
 router.delete('/:id', authorize('SUPER_ADMIN'), collegeController.deleteCollege);
+
+// GET/PUT /api/colleges/feature-config — college admin manages own college feature flags
+router.get(
+  '/feature-config',
+  authorize('SUPER_ADMIN', 'COLLEGE_ADMIN', 'TEACHER', 'STUDENT'),
+  tenantIsolation,
+  requireActiveSubscription,
+  collegeController.getFeatureConfig
+);
+router.put(
+  '/feature-config',
+  authorize('COLLEGE_ADMIN'),
+  tenantIsolation,
+  requireActiveSubscription,
+  collegeController.updateFeatureConfig
+);
 
 module.exports = router;

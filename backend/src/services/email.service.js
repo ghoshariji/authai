@@ -48,9 +48,21 @@ const sendSubscriptionConfirmationEmail = async (adminEmail, collegeName, plan, 
   }
 };
 
+const sendStudentWelcomeEmail = async (studentEmail, studentName, collegeName, password) => {
+  try {
+    const template = emailTemplates.studentWelcome(studentName, collegeName, studentEmail, password);
+    await sendEmail({ to: studentEmail, ...template });
+    logger.info(`Student welcome email sent to ${studentEmail}`);
+  } catch (error) {
+    logger.error(`Failed to send student welcome email to ${studentEmail}: ${error.message}`);
+    // Don't throw — log and continue importing other students
+  }
+};
+
 module.exports = {
   sendWelcomeEmail,
   sendPasswordResetEmail,
   sendPasswordChangedEmail,
   sendSubscriptionConfirmationEmail,
+  sendStudentWelcomeEmail,
 };

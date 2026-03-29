@@ -61,6 +61,13 @@ const collegeSchema = new mongoose.Schema(
       ref: 'User',
       default: null,
     },
+    featureConfig: {
+      is_chat_feature_enabled: { type: Boolean, default: true },
+      is_attendance_display: { type: Boolean, default: true },
+      is_notice_display: { type: Boolean, default: true },
+      is_results_display: { type: Boolean, default: true },
+      is_timetable_display: { type: Boolean, default: true },
+    },
   },
   {
     timestamps: true,

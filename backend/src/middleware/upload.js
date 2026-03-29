@@ -67,12 +67,35 @@ const handleMulterError = (err, req, res, next) => {
   next(err);
 };
 
+// Excel-specific uploader (for student import)
+const ALLOWED_EXCEL_TYPES = [
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+];
+const uploadExcel = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: fileFilter(ALLOWED_EXCEL_TYPES),
+});
+
+// Notice attachments: images + PDFs
+const ALLOWED_NOTICE_TYPES = [...ALLOWED_IMAGE_TYPES, 'application/pdf'];
+const uploadNotice = multer({
+  storage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB per file
+  fileFilter: fileFilter(ALLOWED_NOTICE_TYPES),
+});
+
 module.exports = {
+  upload: uploadAny,         // generic alias
   uploadImage,
   uploadDocument,
   uploadAudio,
   uploadAny,
+  uploadExcel,
+  uploadNotice,
   handleMulterError,
   ALLOWED_IMAGE_TYPES,
   ALLOWED_DOC_TYPES,
+  ALLOWED_NOTICE_TYPES,
 };

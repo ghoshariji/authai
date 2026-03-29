@@ -1,11 +1,36 @@
 const Notice = require('../models/Notice');
 const ApiResponse = require('../utils/apiResponse');
 const { getPaginationParams, buildPaginationMeta } = require('../utils/pagination');
+const { uploadCollegeFile, deleteFromCloudinary } = require('../services/cloudinary.service');
+const logger = require('../utils/logger');
 
 const createNotice = async (req, res, next) => {
   try {
     const collegeId = req.collegeId || req.user.collegeId;
     const { title, content, type, targetAudience, targetClassId, expiresAt } = req.body;
+
+    // Handle file attachments (images/PDFs via multer .array('attachments', 5))
+    const attachments = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        try {
+          const resourceType = file.mimetype.startsWith('image/') ? 'image' : 'raw';
+          const result = await uploadCollegeFile(file.buffer, collegeId, 'notices', {
+            resourceType,
+            publicId: `notice_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          });
+          attachments.push({
+            url: result.secure_url,
+            publicId: result.public_id,
+            name: file.originalname,
+            type: file.mimetype.startsWith('image/') ? 'IMAGE' : 'PDF',
+            size: file.size,
+          });
+        } catch (err) {
+          logger.error(`Notice attachment upload failed: ${err.message}`);
+        }
+      }
+    }
 
     const notice = await Notice.create({
       title,
@@ -16,6 +41,7 @@ const createNotice = async (req, res, next) => {
       collegeId,
       createdBy: req.user.id,
       expiresAt: expiresAt || null,
+      attachments,
     });
 
     const populated = await Notice.findById(notice._id)
@@ -132,6 +158,18 @@ const deleteNotice = async (req, res, next) => {
 
     if (!notice) {
       return ApiResponse.notFound(res, 'Notice not found');
+    }
+
+    // Clean up Cloudinary attachments in background
+    if (notice.attachments && notice.attachments.length > 0) {
+      Promise.all(
+        notice.attachments.map((a) => {
+          const resourceType = a.type === 'IMAGE' ? 'image' : 'raw';
+          return deleteFromCloudinary(a.publicId, resourceType).catch((e) =>
+            logger.error(`Failed to delete notice attachment ${a.publicId}: ${e.message}`)
+          );
+        })
+      );
     }
 
     return ApiResponse.success(res, 'Notice deleted successfully');

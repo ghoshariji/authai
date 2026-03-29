@@ -131,10 +131,53 @@ const getCollegeStats = async (req, res, next) => {
   }
 };
 
+// GET /api/colleges/feature-config  — returns own college's featureConfig
+const getFeatureConfig = async (req, res, next) => {
+  try {
+    const collegeId = req.collegeId || req.user.collegeId;
+    const college = await College.findById(collegeId).select('featureConfig name').lean();
+    if (!college) return ApiResponse.notFound(res, 'College not found');
+    return ApiResponse.success(res, 'Feature config retrieved', college.featureConfig);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /api/colleges/feature-config  — college admin updates feature flags
+const updateFeatureConfig = async (req, res, next) => {
+  try {
+    const collegeId = req.collegeId || req.user.collegeId;
+    const allowed = [
+      'is_chat_feature_enabled',
+      'is_attendance_display',
+      'is_notice_display',
+      'is_results_display',
+      'is_timetable_display',
+    ];
+    const update = {};
+    allowed.forEach((key) => {
+      if (req.body[key] !== undefined) {
+        update[`featureConfig.${key}`] = Boolean(req.body[key]);
+      }
+    });
+    const college = await College.findByIdAndUpdate(
+      collegeId,
+      { $set: update },
+      { new: true, runValidators: true }
+    ).select('featureConfig');
+    if (!college) return ApiResponse.notFound(res, 'College not found');
+    return ApiResponse.success(res, 'Feature config updated', college.featureConfig);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllColleges,
   getCollegeById,
   updateCollege,
   deleteCollege,
   getCollegeStats,
+  getFeatureConfig,
+  updateFeatureConfig,
 };

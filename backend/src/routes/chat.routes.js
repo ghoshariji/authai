@@ -7,6 +7,12 @@ const { requireActiveSubscription, requireFeature } = require('../middleware/sub
 
 router.use(authenticate, tenantIsolation, requireActiveSubscription, requireFeature('chat'));
 
+// Contacts list for DM discovery (must come before /:id routes)
+router.get('/contacts', chatController.getCollegeContacts);
+
+// Direct 1-on-1 chat — find or create
+router.post('/direct/:userId', chatController.getOrCreateDirectChat);
+
 router.get('/', chatController.getChatRooms);
 router.get('/:id', chatController.getChatRoomById);
 router.get('/:id/messages', chatController.getMessages);

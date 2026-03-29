@@ -44,6 +44,18 @@ export const collegeApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['College'],
     }),
+    getFeatureConfig: builder.query<any, void>({
+      query: () => '/colleges/feature-config',
+      providesTags: ['College'],
+    }),
+    updateFeatureConfig: builder.mutation<any, Record<string, boolean>>({
+      query: (data) => ({
+        url: '/colleges/feature-config',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['College'],
+    }),
   }),
 });
 
@@ -54,4 +66,6 @@ export const {
   useGetCollegeStatsQuery,
   useGetSuperAdminStatsQuery,
   useToggleCollegeStatusMutation,
+  useGetFeatureConfigQuery,
+  useUpdateFeatureConfigMutation,
 } = collegeApi;

@@ -1,5 +1,7 @@
 const ChatRoom = require('../models/ChatRoom');
 const Message = require('../models/Message');
+const { User } = require('../models/User');
+const Student = require('../models/Student');
 const ApiResponse = require('../utils/apiResponse');
 const { getPaginationParams, buildPaginationMeta } = require('../utils/pagination');
 
@@ -191,6 +193,95 @@ const markAsRead = async (req, res, next) => {
   }
 };
 
+// GET /api/chat/contacts — list all students/teachers in same college the user can DM
+const getCollegeContacts = async (req, res, next) => {
+  try {
+    const collegeId = req.collegeId || req.user.collegeId;
+    const { page, limit, skip } = getPaginationParams(req.query);
+    const search = req.query.search || '';
+
+    const filter = {
+      collegeId,
+      isActive: true,
+      _id: { $ne: req.user.id }, // exclude self
+    };
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const [users, total] = await Promise.all([
+      User.find(filter)
+        .select('name email avatar role')
+        .sort({ name: 1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      User.countDocuments(filter),
+    ]);
+
+    return ApiResponse.paginated(res, 'Contacts retrieved', users, buildPaginationMeta(total, page, limit));
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/chat/direct/:userId — find or create 1-on-1 DIRECT chat room with another user (same college only)
+const getOrCreateDirectChat = async (req, res, next) => {
+  try {
+    const collegeId = req.collegeId || req.user.collegeId;
+    const myId = req.user.id;
+    const { userId } = req.params;
+
+    if (myId === userId) {
+      return ApiResponse.error(res, 'Cannot create chat with yourself', 400);
+    }
+
+    // Verify target user exists and belongs to same college
+    const targetUser = await User.findOne({ _id: userId, collegeId, isActive: true }).select('name avatar role').lean();
+    if (!targetUser) {
+      return ApiResponse.notFound(res, 'User not found in your college');
+    }
+
+    // Check for existing DIRECT room between these two users
+    const existing = await ChatRoom.findOne({
+      type: 'DIRECT',
+      collegeId,
+      isActive: true,
+      'participants.user': { $all: [myId, userId] },
+    })
+      .populate('participants.user', 'name avatar role')
+      .lean();
+
+    if (existing) {
+      return ApiResponse.success(res, 'Direct chat found', existing);
+    }
+
+    // Create new DIRECT room
+    const chatRoom = await ChatRoom.create({
+      name: null,
+      type: 'DIRECT',
+      collegeId,
+      createdBy: myId,
+      participants: [
+        { user: myId, role: 'MEMBER' },
+        { user: userId, role: 'MEMBER' },
+      ],
+    });
+
+    const populated = await ChatRoom.findById(chatRoom._id)
+      .populate('participants.user', 'name avatar role')
+      .lean();
+
+    return ApiResponse.created(res, 'Direct chat created', populated);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createChatRoom,
   getChatRooms,
@@ -198,4 +289,6 @@ module.exports = {
   getMessages,
   sendMessage,
   markAsRead,
+  getCollegeContacts,
+  getOrCreateDirectChat,
 };

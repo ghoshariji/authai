@@ -28,7 +28,8 @@
     "nodemailer": "^6.9.7",
     "express-validator": "^7.0.1",
     "compression": "^1.7.4",
-    "mongoose-paginate-v2": "^1.7.4"
+    "mongoose-paginate-v2": "^1.7.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
