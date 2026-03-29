@@ -9,8 +9,23 @@ node_modules/
 # Build outputs
 dist/
 build/
-android/
-ios/
+
+# React Native — keep android/ & ios/ source; ignore generated artifacts
+android/app/build/
+android/build/
+android/.gradle/
+**/android/local.properties
+android/*.iml
+android/.idea/
+ios/Pods/
+ios/build/
+ios/*.xcworkspace/xcuserdata
+ios/*.xcodeproj/xcuserdata
+ios/*.xcodeproj/project.xcworkspace/xcuserdata
+ios/.xcode.env.local
+*.hprof
+*.keystore
+!android/app/debug.keystore
 
 # Logs
 logs/
